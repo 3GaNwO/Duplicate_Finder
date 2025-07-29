@@ -49,11 +49,14 @@ Import previous scans from:
 CSV
 JSON
 
+📂 Remove Empty Folders on Scan Checkbox Option
+
 🧹 Duplicate Management Tools
 Delete Duplicates option (with confirmation)
 Move to Trash (Recycle Bin) using send2trash
 Undo Delete History with a recovery option
 Selective deletion via checkboxes per file
+Ability to Move Duplicate Files to User Specified Location
 
 🎵 Optional Music Player
 Integrated music playback using pygame.mixer
@@ -66,7 +69,6 @@ Toggle for themes
 Toggle for music/audio
 Fast hash algorithm selection (optional)
 Delete confirmation settings
-User-selected duplicate move folder
 
 🖱️ Context Menu & File Preview
 Right-click context menu with:
