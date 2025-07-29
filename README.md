@@ -1,12 +1,12 @@
-OwNaG3's Duplicate Files Project
+<h1><b> OwNaG3's Duplicate Files Project </h1></b>
 
 This app was a small project to make an easy duplicate file deleter. 
 
-If you want to run it via Python you will need these Requirements:
+If you want to run it via Python you will need these <b>Requirements:</b>
 
 pygames, ttkthemes, and send2trash. 
 
-To install use:
+<b>To install requirements use:</b>
 
 pip install pygame ttkthemes send2trash
 
@@ -20,7 +20,7 @@ py -m pip install pygame ttkthemes send2trash
 
 Once you have them installed you should be able to just run the .py script.
 
-Some Features:
+<h3>Features:</h3>
 
 ✅ 🖥️ General Application Features
 Graphical User Interface (GUI) using tkinter + ttk
