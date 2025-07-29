@@ -9,9 +9,13 @@ pygames, ttkthemes, and send2trash.
 To install use:
 
 pip install pygame ttkthemes send2trash
-or 
+
+or
+ 
 python3 -m pip install pygame ttkthemes send2trash
-or 
+
+or
+ 
 py -m pip install pygame ttkthemes send2trash
 
 Once you have them installed you should be able to just run the .py script.
