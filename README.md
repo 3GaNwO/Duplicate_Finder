@@ -49,12 +49,6 @@ Import previous scans from:
 CSV
 JSON
 
-Undo Deletion History with a dedicated dialog window
-Undo support for both:
-Manually deleted files
-Automatically deleted duplicates
-Export history to JSON or CSV
-
 🧹 Duplicate Management Tools
 Delete Duplicates option (with confirmation)
 Move to Trash (Recycle Bin) using send2trash
