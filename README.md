@@ -1,7 +1,8 @@
 <h1><b> OwNaG3's Duplicate Files Project</h1></b>
 
-This app was a small project to make an easy duplicate file deleter. 
-
+This app was a small project to make an easy duplicate file deleter.<br> 
+Only tested on Windows so far. The exe is for ease of use<br>
+The .ico file is for the image on the program to load if running via Python<br>
 If you want to run it via Python you will need these:
 
 <ul><h4>Requirements:</h4>
