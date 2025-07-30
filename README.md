@@ -22,7 +22,7 @@ Once you have them installed you should be able to just run the .py script.<br>
 <li>Multi-threaded scanning (non-blocking file operations while UI remains responsive)</li>
 <li>Resizable and movable windows</li>
 <h4>Custom menu bar with:</h4>
-<li>File, Edit, Export, Import, Settings, Tools, Help sections</li>
+<li>File, Edit, Export, Import, Settings, Tools, About sections</li>
 <li>Custom icons and optional audio cues</li></ul>
 
 <ul><h4>🔍 🗂️ File Duplicate Scanning</h4>
