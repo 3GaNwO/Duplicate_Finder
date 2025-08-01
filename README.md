@@ -14,7 +14,9 @@ Built with `tkinter`, `ttkthemes`, and `send2trash`.
 Install dependencies using one of the following:
 ```bash
 pip install pygame ttkthemes send2trash
+# or
 python3 -m pip install pygame ttkthemes send2trash
+# or
 py -m pip install pygame ttkthemes send2trash
 ```
 
