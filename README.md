@@ -1,91 +1,140 @@
-<h1><b><p align="center"> OwNaG3's Duplicate Files Project</p></h1></b>
 
-<p align="center">This app was a small project to make an easy duplicate file deleter.<br> 
-Only tested on Windows so far. The exe is for ease of use<br>
-The .ico file is for the image on the program to load if running via Python<br>
-If you want to run it via Python you will need these:</p>
+# OwNaG3's Duplicate File Cleaner
 
-<ul><h4>Requirements:</h4>
-<li>pygames, ttkthemes, and send2trash. </li></ul>
-<ul><h4>To install requirements use:</h4>
-<li>pip install pygame ttkthemes send2trash<br></li>
-<li>python3 -m pip install pygame ttkthemes send2trash<br></li>
-<li>py -m pip install pygame ttkthemes send2trash<br></li></ul>
+A powerful, fast, and customizable Python GUI tool to find and remove duplicate files from your system.  
+Built with `tkinter`, `ttkthemes`, and `send2trash`.  
+✅ Tested on Windows — standalone EXE included.
 
-Once you have them installed you should be able to just run the .py script.<br>
+---
 
-<h3><p align="center">Features:</p></h3>
+## 📥 How to Get Started
 
-<ul><h4>✅ 🖥️ General Application Features</h4>
-<li>Graphical User Interface (GUI) using tkinter + ttk</li>
-<li>Themed UI support using ttkthemes (optional, with fallback if not installed)</li>
-<li>Multi-threaded scanning (non-blocking file operations while UI remains responsive)</li>
-<li>Resizable and movable windows</li>
-<h4>Custom menu bar with:</h4>
-<li>File, Edit, Export, Import, Settings, Tools, About sections</li>
-<li>Custom icons and optional audio cues</li></ul>
+### 🔧 Requirements
 
-<ul><h4>🔍 🗂️ File Duplicate Scanning</h4>
-<li>Fast hash-based duplicate finder (MD5 or SHA-256)</li>
-<li>Scans folders recursively</li>
-<li>Filters and groups duplicate files</li>
-<h4>Tracks and displays:</h4>
-<li>Total scanned files</li>
-<li>Duplicate count</li>
-<li>Duplicate groups</li>
-<li>Progress label and multithreaded scan with status updates</li></ul>
+Install dependencies using one of the following:
+```bash
+pip install pygame ttkthemes send2trash
+python3 -m pip install pygame ttkthemes send2trash
+py -m pip install pygame ttkthemes send2trash
+```
 
-<ul><h4>📂Export/Import Functionality</h4>
-<h4>Export scan results as:</h4>
-<li>CSV</li>
-<li>JSON</li>
-<h4>Import previous scans from:</h4>
-<li>CSV</li>
-<li>JSON</li></ul>
+Once installed, you can run the `.py` script directly, or use the bundled `.exe`.  
+The `.ico` file is used for the program icon when running via Python.
 
-<ul><h4>📂Remove Empty Folders on Scan Checkbox Option</h4></ul>
+---
 
-<ul><h4>🧹Duplicate Management Tools</h4>
-<li>Delete Duplicates option (with confirmation)</li>
-<li>Move to Trash (Recycle Bin) using send2trash</li>
-<li>Undo Delete History with a recovery option</li>
-<li>Selective deletion via checkboxes per file</li>
-<li>Ability to Move Duplicate Files to User Specified Location</li>
-<li>Ability to Undo Moved/Deleted Files</li></ul>
+## 🌟 Key Features
 
-<ul><h4>🎵Optional Music Player</h4>
-<li>Integrated music playback using pygame.mixer</li>
-<li>Play/Pause background music during scan sessions</li>
-<li>Mute and Stop buttons</li>
-<li>Fallback logic if pygame not installed</li></ul>
+### 🖥️ GUI Interface
+- ✅ Custom interface built using `tkinter`for responsive, native-feeling GUI
+- 🎨 Optional theming via `ttkthemes`
+- 🧵 Multi-threaded scanning for responsiveness
+- 🪟 Resizable, draggable windows
+- 🧭 Menu bar includes File, Edit, Export, Import, Settings, Tools, and About
 
-<ul><h4>⚙️Settings & Preferences</h4>
-<li>Toggle for themes</li>
-<li>Toggle for music/audio</li>
-<li>Fast hash algorithm selection (optional)</li>
-<li>Delete confirmation settings</li></ul>
+### 🔍 Duplicate File Scanning
+- 🔄 Recursively scans folders
+- 📏 Detects duplicates using:
+  - 📐 File size grouping
+  - 📐 Partial or full MD5 hashing
+- 🧾 Adjustable hash read size (512KB to full file)
+- 🧠 Auto Scanning options
+- 🗂️ Displays results in a sortable table view
 
-<ul><h4>🖱️Context Menu & File Preview</h4>
-<li>Right-click context menu with:</li>
-<li>Open file</li>
-<li>Open containing folder</li>
-<li>Copy file path</li>
-<li>Displays file previews (e.g., images, metadata) if supported</li></ul>
+### 📁 File & Folder Management
+- 🗃️ Folder selection with dialog
+- 👁️ File previews using system apps
+- 📁 One-click open containing folder
 
-<ul><h4>📊Statistics & Logging</h4>
-<h4>Displays:</h4>
-<li>Total number of scanned files</li>
-<li>Number of detected duplicate groups</li>
-<li>Number of deleted or moved files</li>
-<li>Logs or console outputs for debugging and scanning errors</li></ul>
+### 📁 Treeview Interface
+- 📋 Multi-column layout:
+  - ✅ Checkbox
+  - 📁 File path
+  - 📐 Size
+  - 🔢 Group number
+- 🔍 Drag-select, Ctrl+Click, and Shift+Click
+- 🔀 Sort by path, size, or group
+- 🖱️ Right-click context menu
 
-<ul><h4>🧪Testing/Dev Features</h4>
-<li>Multiple history_type systems: export, delete, scan</li>
-<li>Hooks for analytics or usage tracking</li>
-<li>Placeholder buttons for future tools (e.g., File Cleaner, Log Viewer)</li></ul>
+### 🗑️ File Deletion
+- ⚠️ Confirm before deletion
+- 🗃️ Delete permanently or send to Recycle Bin
+- ♻️ Auto-clean empty folders (optional)
+- 🛡️ Backups before deletion
+- 🗑️ Undo history for all deletes
 
-<ul><h4>🌐Portability and Packaging</h4>
-<li>PyInstaller-compatible</li>
-<li>.ico icon set via PyInstaller for compiled .exe</li>
-<li>Handles missing modules gracefully (try/except import blocks)</li>
-<li>Prints debug info to console on errors (e.g., traceback logging)</li></ul>
+### 📦 File Moving
+- 📤 Move selected files to custom folder
+- 🧠 Auto-renames on name conflicts
+- 🕘 Move history supports full undo
+
+### 🔁 Undo System
+- 🪄 Unified history for deletes and moves
+- ✅ Resizable undo dialog
+- 🔄 Restore multiple items at once
+- 🔄 Remove entries after restore
+- ✅ Select all checkbox
+- 🖱️ Drag-select with live highlighting
+
+### 🖱️ Context Menu & Preview
+- 🖼️ Right-click actions include:
+  - 📁 Open file
+  - 📁 Open folder
+  - 📁 Copy file path
+- 🧠 Show file previews (images, metadata, etc.)
+
+### 🎵 Music Player (Bonus Feature)
+- 🎶 Loads and plays music from folder (.mp3, .wav, .ogg)
+- ▶️ Play/Pause/Stop/Next controls
+- 🔀 Shuffle and 🔁 repeat modes
+- 🔊 Volume slider
+- 🎧 Display current song
+
+### ⚙️ Settings & Preferences
+- 💾 Saved in `settings.json`
+- 🔧 Configurable options:
+  - 🧾 Hash read size
+  - 🗑️ Use Recycle Bin (on/off)
+  - 🗑️ Auto-clean folders (on/off)
+  - 🧾 Undo retention days
+  - 🧾 Undo backup location
+  - 🎨 Theme selection
+  - 🎵 Music volume & playback settings
+
+### 📤 Export / Import
+- 📄 Export scan results as:
+  - CSV
+  - JSON
+- 📁 Import past scans from:
+  - CSV
+  - JSON
+
+### 💾 Persistent Data
+- ✅ Settings persist between sessions
+- 🕘 Delete history stored in delete_history.json
+- 📦 Move history stored in move_history.json
+
+### 🛡️ Stability & Error Handling
+- 🚫 Graceful handling of filesystem errors (e.g., permission denied, missing files)
+- 🧾 Logs permission errors and missing files
+- 🔐 Avoids re-adding restored files as duplicates
+
+---
+
+## 🔎 Related Keywords
+
+Python duplicate file finder, tkinter GUI, send2trash Python, file deduplication, Python file cleaner, file hashing, Windows duplicate remover, OwNaG3, pygame, ttkthemes
+
+---
+
+## 📣 Feedback & Contributions
+
+Have a bug report or feature idea?
+➡️ Open an Issue or submit a Pull Request.
+https://github.com/3GaNwO/OwNaG3s-Duplicate-Finder/issues
+
+---
+
+## 📜 License
+
+This project is open-source and freely available for modification and use. See the `LICENSE` file.
