@@ -61,6 +61,7 @@ class DuplicateFinderApp:
     SETTINGS_FILE = "settings.json"
     DELETE_HISTORY_MAX = 999999999
     DELETE_AUTO_CLEAN_DAYS_DEFAULT = 5
+    DEFAULT_AUTO_SELECT_MODE = "newest"
 
     def __init__(self, root):
         self.root = root
@@ -141,6 +142,7 @@ class DuplicateFinderApp:
         self.build_gui()
 
         self.settings = self.load_settings()
+        self.settings.setdefault("default_auto_select_mode", self.DEFAULT_AUTO_SELECT_MODE)
 
         # Undo backup folder: fallback to default if not set in settings
         self.undo_backup_folder = self.settings.get(
@@ -319,6 +321,9 @@ class DuplicateFinderApp:
         undo_history_btn = ttk.Button(btn_frame, text="Undo Move/Delete", command=self.show_undo_dialog)
         undo_history_btn.pack(side=tk.LEFT, padx=5)
 
+        smart_btn = ttk.Button(btn_frame, text="Smart Auto-Select", command=self.choose_auto_select_mode)
+        smart_btn.pack(side=tk.LEFT, padx=5)
+
         self.status_label = ttk.Label(self.root, text="Ready.")
         self.status_label.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=2)
 
@@ -410,7 +415,99 @@ class DuplicateFinderApp:
             style="Done.TButton"
         ).pack(side="left")
 
-    # -- Folder selection Logic --
+    # Auto Select Mode
+
+    def choose_auto_select_mode(self):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Smart Auto-Select Mode")
+        dialog.geometry("400x320")
+        dialog.minsize(360, 280)
+        dialog.resizable(True, True)
+        dialog.transient(self.root)
+        dialog.grab_set()
+
+        # -- Main frame --
+        main_frame = ttk.Frame(dialog, padding=(15, 15, 15, 10))
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # -- Title label --
+        title_label = ttk.Label(main_frame, text="Choose Smart Auto-Select Strategy", font=("Segoe UI", 11, "bold"))
+        title_label.pack(pady=(0, 12))
+
+        # -- Radio Buttons Frame --
+        mode_var = tk.StringVar(value=self.settings.get("default_auto_select_mode", "newest"))
+
+        modes = {
+            "newest": "Keep Newest File",
+            "oldest": "Keep Oldest File",
+            "shortest_path": " Keep Shortest Path",
+            "longest_path": "Keep Longest Path",
+            "random": "Pick Random File"
+        }
+
+        radio_frame = ttk.Frame(main_frame)
+        radio_frame.pack(fill=tk.BOTH, expand=True)
+
+        for key, label in modes.items():
+            ttk.Radiobutton(radio_frame, text=label, variable=mode_var, value=key).pack(anchor="w", pady=4, padx=5)
+
+        # -- Button Frame --
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(pady=(20, 5), anchor="e")
+
+        def confirm():
+            self.settings["default_auto_select_mode"] = mode_var.get()
+            self.save_settings()
+            dialog.destroy()
+            self.smart_auto_select(mode_var.get())
+
+        ttk.Button(button_frame, text="Apply", command=confirm).pack(side=tk.RIGHT, padx=5)
+        ttk.Button(button_frame, text="Cancel", command=dialog.destroy).pack(side=tk.RIGHT)
+
+    def smart_auto_select(self, mode=None):
+        mode = mode or self.settings.get("default_auto_select_mode", "newest")
+        groups = {}
+        file_info_cache = {}
+
+        for row_id in self.tree.get_children():
+            vals = self.tree.item(row_id)["values"]
+            file_path = vals[0]
+            group_number = vals[2]
+
+            if group_number not in groups:
+                groups[group_number] = []
+
+            if file_path not in file_info_cache:
+                try:
+                    file_info_cache[file_path] = os.path.getmtime(file_path)
+                except Exception:
+                    file_info_cache[file_path] = float('-inf')
+
+            groups[group_number].append((row_id, file_path))
+
+        to_select = []
+
+        for group, entries in groups.items():
+            if len(entries) <= 1:
+                continue
+
+            if mode == "newest":
+                entries.sort(key=lambda tup: (-file_info_cache[tup[1]], len(tup[1])))
+            elif mode == "oldest":
+                entries.sort(key=lambda tup: (file_info_cache[tup[1]], len(tup[1])))
+            elif mode == "shortest_path":
+                entries.sort(key=lambda tup: len(tup[1]))
+            elif mode == "longest_path":
+                entries.sort(key=lambda tup: -len(tup[1]))
+            elif mode == "random":
+                random.shuffle(entries)
+
+            to_select.extend(row_id for row_id, _ in entries[1:])
+
+        self.tree.selection_set(to_select)
+        messagebox.showinfo("Auto Selection Complete", f"Smart selected {len(to_select)} duplicate(s) for deletion.")
+
+    #  Folder selection Logic 
 
     def select_folder(self):
         folder = filedialog.askdirectory(title="Select Folder", initialdir=self.last_scan_folder)
@@ -1698,7 +1795,8 @@ class DuplicateFinderApp:
 
 def main():
     root = tk.Tk()
-    root.iconbitmap('ownages_duplicate_finder.ico')
+    icon_path = os.path.join(os.path.dirname(__file__), "ownages_duplicate_finder.ico")
+    root.iconbitmap(default=icon_path)
     app = DuplicateFinderApp(root)
     root.mainloop()
 
