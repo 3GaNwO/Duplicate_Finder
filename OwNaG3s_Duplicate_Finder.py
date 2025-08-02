@@ -2,7 +2,7 @@
 ##                                                                             ##
 ##                         OwNaG3's Duplicate Finder                           ##
 ##                   Finds Duplicate Files to Delete or Move                   ##
-##                        Copyright (C) 2025 OwNaG3                            ## 
+##                        Copyright (C) 2025 OwNaG3                            ##
 ##                                                                             ##
 ##    This program is free software: you can redistribute it and/or modify     ##
 ##    it under the terms of the GNU General Public License as published by     ##
@@ -142,6 +142,10 @@ class DuplicateFinderApp:
         self.build_gui()
 
         self.settings = self.load_settings()
+        self.settings.setdefault("use_filters", False)
+        self.settings.setdefault("filter_min_size_kb", 0)
+        self.settings.setdefault("filter_extensions", "")
+        self.settings.setdefault("filter_excluded_folders", [])
         self.settings.setdefault("default_auto_select_mode", self.DEFAULT_AUTO_SELECT_MODE)
 
         # Undo backup folder: fallback to default if not set in settings
@@ -195,6 +199,10 @@ class DuplicateFinderApp:
         for theme in self.available_themes:
             theme_menu.add_radiobutton(label=theme.title(), variable=self.theme_var, value=theme, command=self.change_theme)
         menubar.add_cascade(label="Themes", menu=theme_menu)
+
+        filters_menu = tk.Menu(menubar, tearoff=0)
+        filters_menu.add_command(label="Set Advanced Filters...", command=self.show_filter_dialog)
+        menubar.add_cascade(label="Filters", menu=filters_menu)
 
         music_menu = tk.Menu(menubar, tearoff=0)
         music_menu.add_command(label="Choose Song", command=self.choose_song)
@@ -504,7 +512,16 @@ class DuplicateFinderApp:
 
             to_select.extend(row_id for row_id, _ in entries[1:])
 
-        self.tree.selection_set(to_select)
+        self.selected_files.clear()
+        for row_id in self.tree.get_children():
+            file_path = self.tree.set(row_id, "File Path")
+            if row_id in to_select:
+                self.tree.set(row_id, "Select", "✔")
+                self.tree.item(row_id, tags=("selected",))
+                self.selected_files.add(file_path)
+            else:
+                self.tree.set(row_id, "Select", "")
+                self.tree.item(row_id, tags=())
         messagebox.showinfo("Auto Selection Complete", f"Smart selected {len(to_select)} duplicate(s) for deletion.")
 
     #  Folder selection Logic 
@@ -660,6 +677,8 @@ class DuplicateFinderApp:
                     return
 
                 filepath = os.path.join(root_dir, file)
+                if not self.passes_advanced_filters(filepath):
+                    continue
                 total_files_found += 1
                 try:
                     size = os.path.getsize(filepath)
@@ -791,6 +810,29 @@ class DuplicateFinderApp:
                 data = f.read(hash_size)
                 hasher.update(data)
         return hasher.hexdigest()
+
+    def passes_advanced_filters(self, file_path):
+        if not self.settings.get("use_filters", False):
+            return True
+
+        for folder in self.settings.get("filter_excluded_folders", []):
+            if folder.strip() and folder.lower() in file_path.lower():
+                return False
+
+        try:
+            min_kb = int(self.settings.get("filter_min_size_kb", 0))
+            if os.path.getsize(file_path) < (min_kb * 1024):
+                return False
+        except Exception:
+            return False
+
+        ext_list = self.settings.get("filter_extensions", "").strip().lower().replace(" ", "").split(",")
+        if ext_list != ['']: 
+            ext = os.path.splitext(file_path)[1].lower().lstrip(".")
+            if ext not in ext_list:
+                return False
+
+        return True
 
     def populate_tree(self, duplicates):
         self.tree.delete(*self.tree.get_children())
@@ -1579,6 +1621,64 @@ class DuplicateFinderApp:
         except Exception as e:
             messagebox.showerror("Import Failed", f"Failed to import JSON:\n{e}")
 
+
+    ## Filter Dialog
+
+    def show_filter_dialog(self):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Advanced Duplicate Filters")
+        dialog.geometry("500x420")
+        dialog.minsize(460, 380)
+        dialog.transient(self.root)
+        dialog.grab_set()
+        dialog.resizable(True, True)
+
+        frame = ttk.Frame(dialog, padding=(20, 15))
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        use_var = tk.BooleanVar(value=self.settings.get("use_filters", False))
+        ttk.Checkbutton(frame, text="Enable Filters", variable=use_var).pack(anchor="w", pady=(0, 10))
+
+        ttk.Label(frame, text="Minimum File Size (in KB):").pack(anchor="w")
+        min_size_var = tk.StringVar(value=str(self.settings.get("filter_min_size_kb", 0)))
+        ttk.Entry(frame, textvariable=min_size_var).pack(fill=tk.X, pady=(0, 12))
+
+        ttk.Label(frame, text="Allowed File Extensions (comma-separated):").pack(anchor="w")
+        ext_var = tk.StringVar(value=self.settings.get("filter_extensions", ""))
+        ttk.Entry(frame, textvariable=ext_var).pack(fill=tk.X, pady=(0, 12))
+
+        ttk.Label(frame, text="Excluded Folders (one per line):").pack(anchor="w")
+        exclude_text = tk.Text(frame, height=6, wrap=tk.WORD)
+        exclude_folders = self.settings.get("filter_excluded_folders", [])
+        exclude_text.insert("1.0", "\n".join(exclude_folders))
+        exclude_text.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
+
+        btn_frame = ttk.Frame(frame)
+        btn_frame.pack(anchor="e", pady=(10, 0))
+
+        def save_filters():
+            try:
+                self.settings["use_filters"] = use_var.get()
+                self.settings["filter_min_size_kb"] = int(min_size_var.get().strip())
+            except ValueError:
+                self.settings["filter_min_size_kb"] = 0
+
+            self.settings["filter_extensions"] = ext_var.get().strip()
+            self.settings["filter_excluded_folders"] = exclude_text.get("1.0", tk.END).strip().splitlines()
+
+            self.save_settings()
+            dialog.destroy()
+
+        def reset_filters():
+            use_var.set(False)
+            min_size_var.set("0")
+            ext_var.set("")
+            exclude_text.delete("1.0", tk.END)
+
+        ttk.Button(btn_frame, text="Reset to Defaults", command=reset_filters).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, text="Cancel", command=dialog.destroy).pack(side=tk.RIGHT)
+        ttk.Button(btn_frame, text="Save", command=save_filters).pack(side=tk.RIGHT, padx=5)
+
     # -- Save/load settings --
 
     def save_settings(self):
@@ -1597,7 +1697,12 @@ class DuplicateFinderApp:
             "shuffle_enabled": self.shuffle_enabled.get(),
             "volume_level": self.volume_level.get(),
             "delete_auto_clean_days": self.delete_auto_clean_days,
+            "use_filters": self.settings.get("use_filters", False),
+            "filter_min_size_kb": self.settings.get("filter_min_size_kb", 0),
+            "filter_extensions": self.settings.get("filter_extensions", ""),
+            "filter_excluded_folders": self.settings.get("filter_excluded_folders", []),
         }
+		
         try:
             with open(self.SETTINGS_FILE, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
@@ -1607,7 +1712,8 @@ class DuplicateFinderApp:
 
     def load_settings(self):
         if not os.path.exists(self.SETTINGS_FILE):
-            return {}
+            self.settings = {}  # Initialize empty settings if file doesn't exist
+            return self.settings
 
         try:
             with open(self.SETTINGS_FILE, encoding="utf-8") as f:
@@ -1640,10 +1746,12 @@ class DuplicateFinderApp:
             if PYGAME_AVAILABLE:
                 pygame.mixer.music.set_volume(self.volume_level.get())
 
+            self.settings = data
             return data
         except Exception as e:
             print(f"Error loading settings: {e}")
-            return {}
+            self.settings = {}  # fallback
+            return self.settings
 
     def select_auto_backup_folder(self):
         folder = filedialog.askdirectory()
@@ -1795,9 +1903,9 @@ class DuplicateFinderApp:
 
 def main():
     root = tk.Tk()
+    app = DuplicateFinderApp(root)
     icon_path = os.path.join(os.path.dirname(__file__), "ownages_duplicate_finder.ico")
     root.iconbitmap(default=icon_path)
-    app = DuplicateFinderApp(root)
     root.mainloop()
 
 
