@@ -125,7 +125,7 @@ The `.ico` file is used for the program icon when running via Python.
 
 ## 🔎 Related Keywords
 
-Python duplicate file finder, tkinter GUI, send2trash Python, file deduplication, Python file cleaner, file hashing, Windows duplicate remover, OwNaG3, pygame, ttkthemes
+Python duplicate file finder, tkinter GUI, send2trash Python, file duplication, Python file cleaner, file hashing, Windows duplicate remover, OwNaG3, pygame, ttkthemes
 
 ---
 
